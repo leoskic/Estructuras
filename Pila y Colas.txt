@@ -1,0 +1,190 @@
+public class MyClass {
+public static void main(String args[]) {
+Pila<Integer> numeros = new Pila();
+numeros.push(10);
+numeros.push(20);
+numeros.push(30);
+System.out.println(numeros.pop());
+System.out.println(numeros.pop());
+System.out.println(numeros.pop());
+System.out.println(numeros.pop());
+Cola<Integer> numeros2 = new Cola();
+numeros2.push(10);
+numeros2.push(20);
+numeros2.push(30);
+System.out.println(numeros2.shift());
+System.out.println(numeros2.shift());
+System.out.println(numeros2.shift());
+System.out.println(numeros2.shift());
+}
+}
+class Pila<T> {
+private ListaEnlazada<T> lista = new ListaEnlazada();
+public void push(T value) {
+this.lista.añadirElemento(value);
+}
+public T pop() {
+Nodo<T> nodo = this.lista.getIndex(lista.getSize());
+lista.eliminar(this.lista.getSize());
+if(nodo != null) {
+return nodo.getValue();
+} else {
+return null;
+}
+}
+public int getSize() {
+return this.lista.getSize();
+}
+}
+class Cola<T> {
+private ListaEnlazada<T> lista = new ListaEnlazada();
+
+public void push(T value) {
+this.lista.añadirElemento(value);
+}
+public T shift() {
+Nodo<T> nodo = this.lista.getIndex(1);
+lista.eliminar(1);
+if(nodo != null) {
+return nodo.getValue();
+} else {
+return null;
+}
+}
+public int getSize() {
+return this.lista.getSize();
+}
+}
+class ListaEnlazada<T> {
+private Nodo<T> inicio = null;
+private Nodo<T> fin = null;
+private int size = 0;
+//Signatures (firmas)
+public void eliminar(int i) {
+Nodo nodo = this.getIndex(i);
+if(nodo != null) {
+//Podemos eliminar este nodo...
+//Pero hay 4 casos diferentes...
+if(nodo.getAnterior() == null && nodo.getSiguiente() == null) {
+//Solo hay 1 elemento en la lista...
+this.inicio = null;
+} else if(nodo.getAnterior() == null && nodo.getSiguiente() != null) {
+//Es el primer elemento de la lista
+inicio = nodo.getSiguiente();
+nodo.getSiguiente().eliminarAnterior();
+} else if(nodo.getAnterior() != null && nodo.getSiguiente() == null) {
+//Es el último elemento de la lista
+fin = nodo.getAnterior();
+nodo.getAnterior().eliminarSiguiente();
+} else {
+//Cualquier elemento entre el primero y último
+nodo.getAnterior().eliminarSiguiente();
+}
+size--;
+}
+
+}
+public void añadirElemento(T elemento) {
+if(inicio == null) {
+inicio = new Nodo(elemento);
+} else {
+Nodo actual = inicio;
+while(actual.getSiguiente() != null) {
+actual = actual.getSiguiente();
+}
+actual.añadirSiguiente(elemento);
+fin = actual.getSiguiente();
+}
+size++;
+}
+public void mostrarListaInversa() {
+Nodo actual = fin;
+while(actual != null) {
+System.out.println(actual.getValue());
+if(actual.getSiguiente() != null) {
+System.out.println("Siguiente:" + actual.getSiguiente().getValue());
+}
+System.out.println(" | ");
+actual = actual.getAnterior();
+}
+System.out.println("null -> Fin de lista");
+}
+public void mostrarLista() {
+Nodo actual = inicio;
+while(actual != null) {
+System.out.println(actual.getValue());
+if(actual.getAnterior() != null) {
+System.out.println("Anterior:" + actual.getAnterior().getValue());
+}
+System.out.println(" | ");
+actual = actual.getSiguiente();
+}
+System.out.println("null -> Fin de lista");
+}
+public Nodo getIndex(int i) {
+if(i > size) {
+return null;
+}
+
+Nodo actual = inicio;
+for(int contador = 1; contador < i; contador++) {
+actual = actual.getSiguiente();
+}
+return actual;
+}
+public int getSize() {
+return this.size;
+}
+}
+class Nodo<T> {
+private T value;
+private Nodo<T> siguiente = null;
+private Nodo<T> anterior = null;
+public Nodo(T value) {
+this.value = value;
+}
+public T getValue() {
+return this.value;
+}
+public void setValue(T value) {
+this.value = value;
+}
+public Nodo getSiguiente() {
+return this.siguiente;
+}
+public Nodo getAnterior() {
+return this.anterior;
+}
+public void eliminarAnterior() {
+if(this.anterior != null) {
+this.anterior = this.anterior.getAnterior();
+/*if(this.anterior.getAnterior() != null) {
+this.anterior = this.anterior.getAnterior();
+} else {
+this.anterior = null;
+}*/
+}
+}
+
+public void eliminarSiguiente() {
+if(this.siguiente != null) {
+this.siguiente = this.siguiente.getSiguiente();
+//this.siguiente.anterior = this;
+if(this.siguiente != null) {
+this.siguiente.cambiarAnterior(this);
+}
+/*if(this.siguiente.getSiguiente() != null) {
+this.siguiente = this.siguiente.getSiguiente();
+} else {
+this.siguiente = null;
+}*/
+}
+}
+private void cambiarAnterior(Nodo nodo) {
+this.anterior = nodo;
+}
+public void añadirSiguiente(T value) {
+this.siguiente = new Nodo(value);
+this.siguiente.anterior = this;
+}
+}
